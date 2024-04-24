@@ -1,4 +1,8 @@
-use std::{io::{Read, Write}, net::{TcpListener, TcpStream}, thread};
+use std::{
+    io::{Read, Write},
+    net::{TcpListener, TcpStream},
+    thread,
+};
 
 fn main() {
     let server = thread::spawn(|| {
@@ -19,6 +23,7 @@ fn tcp_server(addr: &str) -> std::io::Result<()> {
 fn handle_client(mut stream: TcpStream) {
     let mut buffer = [0; 5];
 
+    // 读取确切的长度，这里读取了 5 个字节
     stream.read_exact(&mut buffer).unwrap();
     println!("server received: {}", String::from_utf8_lossy(&buffer));
 
