@@ -1,4 +1,4 @@
-# Geektime Rust 语言训练营
+# Rust Web With Warp Project Learning
 
 ## 环境设置
 
@@ -86,6 +86,32 @@ cargo install cargo-nextest --locked
 ### 注意
 
 - 项目根目录一定要先执行：`pre-commit install`
-- 修改文件 [cliff.toml] 49 行的 replace 改为当前项目地址。
+- 修改配置文件 [cliff.toml] 49 行的 replace 改为当前项目地址
+- 修改配置文件 [deny.toml] 设置如下
+```
+[advisories]
+# The path where the advisory databases are cloned/fetched into
+db-path = "$CARGO_HOME/advisory-dbs"
+# The url(s) of the advisory databases to use
+db-urls = ["https://github.com/rustsec/advisory-db"]
+
+[licenses]
+# List of explicitly allowed licenses
+# See https://spdx.org/licenses/ for list of possible licenses
+# [possible values: any SPDX 3.11 short identifier (+ optional exception)].
+allow = [
+    # "MIT",
+    # "Apache-2.0",
+    #"Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "Apache-2.0",
+    "Unicode-DFS-2016",
+    "MPL-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "CC0-1.0",
+]
+```
 - 添加 .rustfmt.toml 文件，统一代码格式
 - 执行示例命令：`cargo run --example [example name]`
