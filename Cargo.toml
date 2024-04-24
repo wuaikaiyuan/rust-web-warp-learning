@@ -1,5 +1,5 @@
 [package]
-name = "template"
+name = "rust-web-warp-learning"
 version = "0.1.0"
 edition = "2021"
 

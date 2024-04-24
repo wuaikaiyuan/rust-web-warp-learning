@@ -87,3 +87,4 @@ cargo install cargo-nextest --locked
 
 - 修改文件 [cliff.toml] 49 行的 replace 改为当前项目地址。
 - 添加 .rustfmt.toml 文件，统一代码格式
+- 执行示例命令：`cargo run --example [example name]`
