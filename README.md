@@ -81,3 +81,9 @@ cargo nextest 是一个 Rust 增强测试工具。
 ```bash
 cargo install cargo-nextest --locked
 ```
+
+
+### 注意
+
+- 修改文件 [cliff.toml] 49 行的 replace 改为当前项目地址。
+- 添加 .rustfmt.toml 文件，统一代码格式
