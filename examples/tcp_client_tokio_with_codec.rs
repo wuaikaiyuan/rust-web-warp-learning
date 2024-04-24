@@ -9,6 +9,7 @@ use tokio_util::codec::{Framed, LengthDelimitedCodec};
 async fn main() -> Result<(), Box<dyn Error>> {
     let address = address();
     tcp_client_with_codec(&address).await?;
+
     Ok(())
 }
 
