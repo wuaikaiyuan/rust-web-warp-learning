@@ -5,7 +5,6 @@ use warp::{
     reject::{Reject, Rejection},
 };
 
-#[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Question {
     id: QuestionId,
@@ -14,12 +13,10 @@ pub struct Question {
     tags: Option<Vec<String>>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QuestionId(String);
 
 impl Question {
-    #[allow(dead_code)]
     fn new(
         id: QuestionId,
         title: String,
