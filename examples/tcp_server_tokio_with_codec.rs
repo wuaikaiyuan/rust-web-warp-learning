@@ -1,13 +1,14 @@
 use futures::SinkExt;
+use rust_web_warp_learning::address;
 use tokio::net::TcpListener;
 use tokio_stream::StreamExt;
 use tokio_util::codec::{Framed, LengthDelimitedCodec};
 
 #[tokio::main]
 async fn main() {
-    let address = rust_web_warp_learning::address();
+    // let address = rust_web_warp_learning::address();
     // 创建一个 TcpListener 并绑定到指定地址和端口
-    let listener = TcpListener::bind(address).await.unwrap();
+    let listener = TcpListener::bind(address()).await.unwrap();
     println!("Server>> running on 127.0.0.1:8080");
 
     loop {
