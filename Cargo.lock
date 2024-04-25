@@ -916,6 +916,7 @@ dependencies = [
  "anyhow",
  "futures",
  "reqwest",
+ "serde",
  "tokio",
  "tokio-stream",
  "tokio-util",
