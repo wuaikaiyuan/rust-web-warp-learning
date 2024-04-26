@@ -8,7 +8,9 @@ use rust_web_warp_learning::{
 };
 use warp::{http::Method, Filter};
 
-async fn hello() -> Result<impl warp::Reply, warp::Rejection> {
+async fn hello(
+    _trace_id: String,
+) -> Result<impl warp::Reply, warp::Rejection> {
     let our_ids = vec![1, 3, 7, 13];
     Ok(warp::reply::json(&our_ids))
 }
@@ -24,6 +26,20 @@ async fn main() -> Result<()> {
     log::info!("log4rs init success");
     log::info!("warp server is starting ... ");
 
+    let log = warp::log::custom(|info| {
+        log::info!(
+            "{} {} {} {:?} from {} with {:?}",
+            info.method(),
+            info.path(),
+            info.status(),
+            info.elapsed(),
+            info.remote_addr().unwrap(),
+            info.request_headers()
+        );
+    });
+
+    let uuid_filter = warp::any().map(|| uuid::Uuid::new_v4().to_string());
+
     // 跨域设置
     let cors = warp::cors()
         .allow_any_origin()
@@ -38,6 +54,7 @@ async fn main() -> Result<()> {
     let hello = warp::get()
         .and(warp::path("hello"))
         .and(warp::path::end())
+        .and(uuid_filter)
         .and_then(hello);
 
     // GET /question
@@ -45,6 +62,7 @@ async fn main() -> Result<()> {
         .and(warp::path("question"))
         .and(warp::path::end())
         .and(warp::query())
+        .and(uuid_filter)
         .and_then(get_question_by_params);
 
     // GET /question/{id}
@@ -53,12 +71,14 @@ async fn main() -> Result<()> {
         .and(warp::path::param::<i32>())
         .and(warp::query())
         .and(warp::path::end())
+        .and(uuid_filter)
         .and_then(get_question);
 
     let routes = get_item
         .or(hello)
         .or(get_item_by_params)
         .with(cors)
+        .with(log)
         .recover(return_error);
 
     warp::serve(routes).run(socket_addr()).await;

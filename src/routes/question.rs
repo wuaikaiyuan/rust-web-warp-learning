@@ -7,7 +7,9 @@ use std::collections::HashMap;
 
 pub async fn get_question_by_params(
     param: HashMap<String, String>,
+    trace_id: String,
 ) -> Result<impl warp::Reply, warp::Rejection> {
+    log::info!("{} Start query question by params: {:#?}", trace_id, param);
     // 设置默认参数
     let mut pagination = Pagination::default();
 
@@ -27,8 +29,9 @@ pub async fn get_question_by_params(
 pub async fn get_question(
     id: i32,
     param: HashMap<String, String>,
+    trace_id: String,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    println!("params: {:#?}", param);
+    println!("{} params: {:#?}", trace_id, param);
     // let mut question = Question::default();
     // question.id.0 = id.to_string();
 
