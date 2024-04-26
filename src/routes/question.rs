@@ -4,12 +4,14 @@ use crate::model::{
 };
 use anyhow::Result;
 use std::collections::HashMap;
+use tracing::{event, instrument, Level};
 
+#[instrument]
 pub async fn get_question_by_params(
     param: HashMap<String, String>,
-    trace_id: String,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    log::info!("{} Start query question by params: {:#?}", trace_id, param);
+    // log::info!("Start query question by params: {:#?}", param);
+    event!(target: "practical warp query by pagination", Level::INFO, "get_question_by_params");
     // 设置默认参数
     let mut pagination = Pagination::default();
 
@@ -26,14 +28,16 @@ pub async fn get_question_by_params(
 }
 
 // GET /question/{id}
+#[instrument]
 pub async fn get_question(
     id: i32,
     param: HashMap<String, String>,
-    trace_id: String,
+    // trace_id: String,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    println!("{} params: {:#?}", trace_id, param);
+    // println!("params: {:#?}", param);
     // let mut question = Question::default();
     // question.id.0 = id.to_string();
+    event!(target: "practical warp query by id and params", Level::INFO, "get_question");
 
     let mut question = Question {
         id: QuestionId(id.to_string()),
