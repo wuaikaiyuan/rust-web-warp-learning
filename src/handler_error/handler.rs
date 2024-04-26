@@ -1,13 +1,16 @@
 use anyhow::Result;
 use warp::{
     filters::cors::CorsForbidden,
-    reject::{Reject, Rejection},
+    reject::{MethodNotAllowed, Reject, Rejection},
 };
 
 #[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
+    // serde_json 解析错误
     SerdeJsonErr(serde_json::Error, String),
+    WarpCorsForbidden(CorsForbidden),
+    WarpMethodNotAllowed(MethodNotAllowed),
     MissingParamError,
     ResourceNotFound,
 }
@@ -20,6 +23,12 @@ impl std::fmt::Display for Error {
             }
             Error::SerdeJsonErr(ref err, ref msg) => {
                 write!(f, "Serde json err: {} \r\n msg: {}", err, msg)
+            }
+            Error::WarpCorsForbidden(ref err) => {
+                write!(f, "Warp cors forbidden: {}", err)
+            }
+            Error::WarpMethodNotAllowed(ref err) => {
+                write!(f, "Warp method not allowed: {}", err)
             }
             Error::MissingParamError => write!(f, "Parameters is missing"),
             Error::ResourceNotFound => write!(f, "Resource not found"),

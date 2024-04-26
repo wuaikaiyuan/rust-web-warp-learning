@@ -4,7 +4,7 @@ use rust_web_warp_learning::{
     routes::question::{get_question, get_question_by_params},
     socket_addr,
 };
-use warp::Filter;
+use warp::{http::Method, Filter};
 
 async fn hello() -> Result<impl warp::Reply, warp::Rejection> {
     let our_ids = vec![1, 3, 7, 13];
@@ -13,6 +13,17 @@ async fn hello() -> Result<impl warp::Reply, warp::Rejection> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // 添加跨域设置
+    let cors = warp::cors()
+        .allow_any_origin()
+        .allow_headers(vec!["Content-Type"])
+        .allow_methods(&[
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::DELETE,
+        ]);
+
     let hello = warp::get()
         .and(warp::path("hello"))
         .and(warp::path::end())
@@ -36,6 +47,7 @@ async fn main() -> Result<()> {
     let routes = get_item
         .or(hello)
         .or(get_item_by_params)
+        .with(cors)
         .recover(return_error);
 
     warp::serve(routes).run(socket_addr()).await;
