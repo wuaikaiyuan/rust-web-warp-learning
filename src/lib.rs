@@ -1,5 +1,3 @@
-#![warn(clippy::all)]
-
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 pub mod handler_error;

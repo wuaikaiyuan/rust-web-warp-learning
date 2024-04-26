@@ -1,3 +1,5 @@
+#![warn(clippy::all)]
+
 use anyhow::Result;
 use rust_web_warp_learning::{
     handler_error::handler::return_error,
@@ -13,10 +15,17 @@ async fn hello() -> Result<impl warp::Reply, warp::Rejection> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // 添加跨域设置
+    let _log_filter = std::env::var("RUST_LOG").unwrap_or_else(|_| {
+        "practical_rust_book=info,warp=info".to_owned()
+    });
+
+    env_logger::init();
+    log::info!("warp server is starting ... ");
+
+    // 跨域设置
     let cors = warp::cors()
         .allow_any_origin()
-        .allow_headers(vec!["Content-Type"])
+        .allow_headers(vec!["Content-Type", "Authorization"])
         .allow_methods(&[
             Method::GET,
             Method::POST,
