@@ -29,6 +29,7 @@ async fn main() -> Result<()> {
     let get_item = warp::get()
         .and(warp::path("question"))
         .and(warp::path::param::<i32>())
+        .and(warp::query())
         .and(warp::path::end())
         .and_then(get_question);
 

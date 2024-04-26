@@ -7,6 +7,7 @@ use warp::{
 #[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
+    SerdeJsonErr(serde_json::Error, String),
     MissingParamError,
     ResourceNotFound,
 }
@@ -16,6 +17,9 @@ impl std::fmt::Display for Error {
         match *self {
             Error::ParseError(ref err) => {
                 write!(f, "Parameters parse int err: {}", err)
+            }
+            Error::SerdeJsonErr(ref err, ref msg) => {
+                write!(f, "Serde json err: {} \r\n msg: {}", err, msg)
             }
             Error::MissingParamError => write!(f, "Parameters is missing"),
             Error::ResourceNotFound => write!(f, "Resource not found"),
