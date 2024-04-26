@@ -24,6 +24,13 @@ repos:
         language: rust
         files: \.rs$
         args: []
+      - id: cargo-fmt2
+        name: cargo fmt
+        description: Format files with rustfmt again.
+        entry: bash -c 'cargo fmt'
+        language: rust
+        files: \.rs$
+        args: []
       - id: cargo-deny
         name: cargo deny check
         description: Check cargo dependencies

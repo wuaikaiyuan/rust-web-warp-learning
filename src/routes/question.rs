@@ -1,6 +1,6 @@
 use crate::{
-    handler_error::InvalidId,
-    model::{Question, QuestionId},
+    handler_error::handler::Error,
+    model::question::{Question, QuestionId},
 };
 use anyhow::Result;
 
@@ -14,6 +14,6 @@ pub async fn get_question() -> Result<impl warp::Reply, warp::Rejection> {
 
     match question.id.0.parse::<i32>() {
         Ok(_) => Ok(warp::reply::json(&question)),
-        Err(_) => Err(warp::reject::custom(InvalidId)),
+        Err(err) => Err(warp::reject::custom(Error::ParseError(err))),
     }
 }

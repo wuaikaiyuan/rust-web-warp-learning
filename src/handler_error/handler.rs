@@ -5,8 +5,25 @@ use warp::{
 };
 
 #[derive(Debug)]
-pub struct InvalidId;
-impl Reject for InvalidId {}
+pub enum Error {
+    ParseError(std::num::ParseIntError),
+    MissingParamError,
+    ResourceNotFound,
+}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Error::ParseError(ref err) => {
+                write!(f, "Parameters parse int err: {}", err)
+            }
+            Error::MissingParamError => write!(f, "Parameters is missing"),
+            Error::ResourceNotFound => write!(f, "Resource not found"),
+        }
+    }
+}
+
+impl Reject for Error {}
 
 pub async fn return_error(
     r: Rejection,
@@ -16,9 +33,9 @@ pub async fn return_error(
             error.to_string(),
             warp::http::StatusCode::FORBIDDEN,
         ))
-    } else if r.find::<InvalidId>().is_some() {
+    } else if let Some(err) = r.find::<Error>() {
         Ok(warp::reply::with_status(
-            "No valid id provided".to_string(),
+            err.to_string(),
             warp::http::StatusCode::UNPROCESSABLE_ENTITY,
         ))
     } else {

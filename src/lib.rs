@@ -2,9 +2,8 @@
 
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-pub mod model;
-pub use model::{Question, QuestionId};
 pub mod handler_error;
+pub mod model;
 pub mod routes;
 
 pub fn address() -> String {
