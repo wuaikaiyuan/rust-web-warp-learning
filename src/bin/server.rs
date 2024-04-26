@@ -1,6 +1,7 @@
 use anyhow::Result;
 use rust_web_warp_learning::{
-    handler_error::handler::return_error, routes::question::get_question,
+    handler_error::handler::return_error,
+    routes::question::{get_question, get_question_by_params},
     socket_addr,
 };
 use warp::Filter;
@@ -17,12 +18,24 @@ async fn main() -> Result<()> {
         .and(warp::path::end())
         .and_then(hello);
 
+    // GET /question
+    let get_item_by_params = warp::get()
+        .and(warp::path("question"))
+        .and(warp::path::end())
+        .and(warp::query())
+        .and_then(get_question_by_params);
+
+    // GET /question/{id}
     let get_item = warp::get()
         .and(warp::path("question"))
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and_then(get_question);
 
-    let routes = get_item.or(hello).recover(return_error);
+    let routes = get_item
+        .or(hello)
+        .or(get_item_by_params)
+        .recover(return_error);
 
     warp::serve(routes).run(socket_addr()).await;
 
