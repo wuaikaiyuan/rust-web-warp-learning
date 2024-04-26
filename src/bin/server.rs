@@ -19,7 +19,9 @@ async fn main() -> Result<()> {
         "practical_rust_book=info,warp=info".to_owned()
     });
 
-    env_logger::init();
+    // 初始化日志
+    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
+    log::info!("log4rs init success");
     log::info!("warp server is starting ... ");
 
     // 跨域设置
