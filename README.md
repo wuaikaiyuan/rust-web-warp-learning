@@ -78,6 +78,9 @@ git-cliff --init
 
 # 生成 changelog
 git-cliff
+
+# 使用 git --tag 命令时生成 changelog
+git tag -a v0.1.0
 ```
 
 ### 安装 cargo nextest
