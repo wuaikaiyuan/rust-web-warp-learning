@@ -45,6 +45,7 @@ async fn to_and_from_json() {
 mod color {
     use super::*;
 
+    #[allow(dead_code)]
     struct Color {
         r: u8,
         g: u8,
