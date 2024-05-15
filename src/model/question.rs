@@ -1,42 +1,62 @@
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize, Default)]
+use sqlx::{mysql::MySqlRow, FromRow, Row};
+// sqlx::FrowRow
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[allow(non_snake_case)]
 pub struct Question {
-    pub id: QuestionId,
+    // #[serde(skip_deserializing)]
+    // #[serde(skip)]
+    pub id: Option<i64>,
     pub title: String,
-    pub content: String,
-    pub tags: Option<Vec<String>>,
+    pub content: Option<String>,
+    pub tags: Option<String>,
+    pub create_time: Option<chrono::NaiveDateTime>,
+    pub status: Option<u8>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
-pub struct QuestionId(pub String);
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct QuestionId(pub i64);
+
+#[derive(Debug, Serialize, Deserialize)]
+#[allow(non_snake_case)]
+pub struct QuestionResponse {
+    pub id: Option<i64>,
+    pub title: String,
+    pub content: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub createTime: Option<chrono::NaiveDateTime>,
+    pub status: Option<u8>,
+}
 
 impl Question {
     pub fn new(
-        id: QuestionId,
+        id: Option<i64>,
         title: String,
-        content: String,
-        tags: Option<Vec<String>>,
+        content: Option<String>,
+        tags: Option<String>,
+        create_time: Option<chrono::NaiveDateTime>,
+        status: Option<u8>,
     ) -> Self {
         Self {
             id,
             title,
             content,
             tags,
+            create_time,
+            status,
         }
     }
 }
 
-impl std::str::FromStr for QuestionId {
-    type Err = std::io::Error;
-
-    fn from_str(id: &str) -> Result<Self, Self::Err> {
-        match id.is_empty() {
-            false => Ok(QuestionId(id.to_string())),
-            true => Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "question id can not be empty",
-            )),
-        }
+impl<'a> FromRow<'a, MySqlRow> for Question {
+    fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            id: row.get("id"),
+            title: row.get("title"),
+            content: row.get("content"),
+            tags: row.get("tags"),
+            create_time: row.get("create_time"),
+            status: row.get("status"),
+        })
     }
 }

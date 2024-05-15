@@ -72,6 +72,12 @@ git cliff 是一个生成 changelog 的工具。
 
 ```bash
 cargo install git-cliff
+
+# 初始化，创建cliff.toml
+git-cliff --init
+
+# 生成 changelog
+git-cliff
 ```
 
 ### 安装 cargo nextest
@@ -115,3 +121,10 @@ allow = [
 ```
 - 添加 .rustfmt.toml 文件，统一代码格式
 - 执行示例命令：`cargo run --example [example name]`
+
+
+### sqlx-mysql
+
+[Rust & Actix Web – Build a CRUD API with SQLX and MySQL](https://codevoweb.com/rust-actix-web-build-crud-api-with-sqlx-and-mysql/)
+
+[源码](https://github.com/wpcodevo/rust-mysql-crud-sqlx/tree/master)

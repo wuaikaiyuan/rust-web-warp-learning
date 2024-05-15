@@ -1,10 +1,15 @@
 #![warn(clippy::all)]
+use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use rust_web_warp_learning::{
+    dao::DataBase,
     handler_error::handler::return_error,
-    routes::question::{get_question, get_question_by_params},
-    socket_addr,
+    routes::question::{
+        add_question, delete_question, get_question_by_id,
+        get_question_by_pagination, update_question,
+    },
+    socket_addr, AppState,
 };
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, Filter};
@@ -46,29 +51,68 @@ async fn main() -> Result<()> {
             Method::DELETE,
         ]);
 
+    // 加载.env配置
+    dotenv::dotenv().ok();
+    let db_url =
+        std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let db = Arc::new(DataBase::new(&db_url).await);
+    let app_state = warp::any().map(move || {
+        Arc::new(AppState {
+            context: db.clone(),
+            connections: Mutex::new(0),
+        })
+    });
+
     let hello = warp::get()
         .and(warp::path("hello"))
         .and(warp::path::end())
         .and_then(hello);
 
-    // GET /question
-    let get_item_by_params = warp::get()
+    // GET /question?limit=10&offset=0
+    let get_question_by_pagination = warp::get()
         .and(warp::path("question"))
         .and(warp::path::end())
         .and(warp::query())
-        .and_then(get_question_by_params);
+        .and(app_state.clone())
+        .and_then(get_question_by_pagination);
 
     // GET /question/{id}
-    let get_item = warp::get()
+    let get_question_by_id = warp::get()
         .and(warp::path("question"))
-        .and(warp::path::param::<i32>())
-        .and(warp::query())
+        .and(warp::path::param::<i64>())
         .and(warp::path::end())
-        .and_then(get_question);
+        .and(app_state.clone())
+        .and_then(get_question_by_id);
 
-    let routes = get_item
+    // POST /question
+    // {"title": "hello", "content": "world", "tags": "tag1,tag2"}
+    let add_question = warp::post()
+        .and(warp::path("question"))
+        .and(warp::path::end())
+        .and(warp::body::json())
+        .and(app_state.clone())
+        .and_then(add_question);
+
+    let update_question = warp::put()
+        .and(warp::path("question"))
+        .and(warp::path::end())
+        .and(warp::body::json())
+        .and(app_state.clone())
+        .and_then(update_question);
+
+    let delete_question = warp::delete()
+        .and(warp::path("question"))
+        .and(warp::path::param::<i64>())
+        .and(warp::path::end())
+        .and(app_state.clone())
+        .and_then(delete_question);
+
+    let routes = get_question_by_id
         .or(hello)
-        .or(get_item_by_params)
+        .or(get_question_by_pagination)
+        .or(add_question)
+        .or(update_question)
+        .or(delete_question)
         .with(cors)
         .with(warp::trace::request())
         .with(trace_filter)

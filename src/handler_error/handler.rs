@@ -6,20 +6,23 @@ use warp::{
 
 #[derive(Debug)]
 pub enum Error {
-    ParseError(std::num::ParseIntError),
-    // serde_json 解析错误
+    ParseError(String),
     SerdeJsonErr(serde_json::Error, String),
     WarpCorsForbidden(CorsForbidden),
     WarpMethodNotAllowed(MethodNotAllowed),
-    MissingParamError,
+    MissingParamError(String),
     ResourceNotFound,
+    DatabaseError(sqlx::Error),
+    InvalidLimit(String),
+    InvalidOffset(String),
+    UpdateError(String),
 }
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             Error::ParseError(ref err) => {
-                write!(f, "Parameters parse int err: {}", err)
+                write!(f, "Parameters parse err: {}", err)
             }
             Error::SerdeJsonErr(ref err, ref msg) => {
                 write!(f, "Serde json err: {} \r\n msg: {}", err, msg)
@@ -30,8 +33,22 @@ impl std::fmt::Display for Error {
             Error::WarpMethodNotAllowed(ref err) => {
                 write!(f, "Warp method not allowed: {}", err)
             }
-            Error::MissingParamError => write!(f, "Parameters is missing"),
+            Error::MissingParamError(ref err) => {
+                write!(f, "Parameters {} is missing", err)
+            }
             Error::ResourceNotFound => write!(f, "Resource not found"),
+            Error::DatabaseError(ref err) => {
+                write!(f, "Database error: {}", err)
+            }
+            Error::InvalidLimit(ref err) => {
+                write!(f, "Invalid limit: {}", err)
+            }
+            Error::InvalidOffset(ref err) => {
+                write!(f, "Invalid offset: {}", err)
+            }
+            Error::UpdateError(ref err) => {
+                write!(f, "Update error: {}", err)
+            }
         }
     }
 }

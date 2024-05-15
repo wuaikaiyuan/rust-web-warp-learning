@@ -13,22 +13,26 @@ pub struct Pagination {
 pub fn extract_pagination(
     param: HashMap<String, String>,
 ) -> Result<Pagination, Error> {
-    if param.contains_key("limit") && param.contains_key("offset") {
-        return Ok(Pagination {
-            limit: Some(
-                param
-                    .get("limit")
-                    .unwrap()
-                    .parse::<i32>()
-                    .map_err(Error::ParseError)?,
-            ),
-            offset: param
-                .get("offset")
-                .unwrap()
-                .parse::<i32>()
-                .map_err(Error::ParseError)?,
-        });
+    if !param.contains_key("limit") {
+        return Err(Error::MissingParamError("limit".to_string()));
     }
 
-    Err(Error::MissingParamError)
+    if !param.contains_key("offset") {
+        return Err(Error::MissingParamError("offset".to_string()));
+    }
+
+    Ok(Pagination {
+        limit: Some(param.get("limit").unwrap().parse::<i32>().map_err(
+            |_err| {
+                Error::ParseError("limit must not be int type".to_string())
+            },
+        )?),
+        offset: param.get("offset").unwrap().parse::<i32>().map_err(
+            |_err| {
+                Error::ParseError(String::from(
+                    "offset must not be int type",
+                ))
+            },
+        )?,
+    })
 }
